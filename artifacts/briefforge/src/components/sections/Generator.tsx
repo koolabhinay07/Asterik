@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Download, RefreshCw, FileText, CheckCircle2, Sparkles } from "lucide-react";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { INDUSTRIES, DIFFICULTIES, PLATFORMS, Brief, DeliverablePhase, generateMockBrief } from "@/data/mock-data";
@@ -31,64 +31,14 @@ export function Generator() {
     try {
       const el = briefCardRef.current;
 
-      const resolveColor = (value: string): string => {
-        const probe = document.createElement("div");
-        probe.style.cssText = `position:fixed;width:0;height:0;opacity:0;pointer-events:none;color:${value}`;
-        document.body.appendChild(probe);
-        const resolved = getComputedStyle(probe).color;
-        document.body.removeChild(probe);
-        return resolved || value;
-      };
-
-      const seen = new Map<string, string>();
-      const replaceModernColors = (text: string): string =>
-        text.replace(/ok(?:lab|lch)\([^)]+\)/g, (match) => {
-          if (!seen.has(match)) seen.set(match, resolveColor(match));
-          return seen.get(match)!;
-        });
-
-      const patchOklab = (clonedDoc: Document) => {
-        // Patch inline <style> elements
-        clonedDoc.querySelectorAll("style").forEach((styleEl) => {
-          if (!styleEl.textContent) return;
-          styleEl.textContent = replaceModernColors(styleEl.textContent);
-        });
-
-        // Read CSS rules from the ORIGINAL document's parsed stylesheets,
-        // patch them, and inject as inline <style> into the clone so that
-        // html2canvas never encounters oklab/oklch from linked sheets.
-        Array.from(document.styleSheets).forEach((sheet) => {
-          try {
-            const rules = Array.from(sheet.cssRules ?? []);
-            const css = rules.map((r) => r.cssText).join("\n");
-            if (!css) return;
-            const patched = replaceModernColors(css);
-            const inlined = clonedDoc.createElement("style");
-            inlined.textContent = patched;
-            clonedDoc.head.appendChild(inlined);
-          } catch {
-            // Cross-origin sheets throw SecurityError — skip them
-          }
-        });
-
-        // Remove <link rel="stylesheet"> from clone to avoid double-loading
-        clonedDoc.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
-          link.parentNode?.removeChild(link);
-        });
-      };
-
-      const canvas = await html2canvas(el, {
-        scale: 3,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-        onclone: patchOklab,
-      });
-
       const filename = `${generatedBrief.title.replace(/[^a-z0-9]/gi, "-").toLowerCase()}-brief.png`;
+      const dataUrl = await toPng(el, {
+        pixelRatio: 3,
+        backgroundColor: "#ffffff",
+      });
       const link = document.createElement("a");
       link.download = filename;
-      link.href = canvas.toDataURL("image/png");
+      link.href = dataUrl;
       link.click();
     } finally {
       setIsDownloading(false);
