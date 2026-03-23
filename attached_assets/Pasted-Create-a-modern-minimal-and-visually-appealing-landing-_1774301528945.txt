@@ -1,0 +1,74 @@
+Create a modern, minimal, and visually appealing landing page for a UI/UX platform called "BriefForge".
+
+Purpose of the website:
+- Help designers generate high-quality UX design briefs
+- Provide real-world problem statements for portfolio projects
+- Allow users to download briefs as PDF
+- Ensure briefs are structured to improve placement/job readiness
+
+Design Style:
+- Clean, modern, and minimalist (similar to a high-end SaaS landing page)
+- Soft gray/white gradient background
+- Rounded UI elements (buttons, cards, containers)
+- Subtle shadows and depth
+- Centered hero section with strong typography
+- Creative horizontal scrolling card section showcasing sample briefs
+- Use a calm color palette with occasional vibrant accents
+
+Layout Structure:
+
+1. Navbar:
+- Logo (BriefForge)
+- Links: Home, Features, Generate Brief, Pricing, Contact
+- Simple and clean
+
+2. Hero Section:
+- Large headline: "Create Portfolio-Ready UX Case Studies"
+- Subheading: "Generate real-world design briefs that help you stand out and get hired"
+- CTA buttons: "Generate Brief" and "Explore Samples"
+- Tag-style filters (e.g., Fintech, Healthcare, E-commerce, AI, EdTech)
+
+3. Featured Brief Carousel:
+- Horizontal scroll section with cards
+- Each card shows:
+  - Problem title
+  - Industry tag
+  - Difficulty level
+  - Short description
+- Cards slightly rotated/stacked for modern feel
+
+4. Features Section:
+- Grid with icons explaining:
+  - AI-generated briefs
+  - Real-world problem statements
+  - Downloadable PDF briefs
+  - Portfolio-ready structure
+  - Placement-focused challenges
+
+5. Brief Generator Section:
+- Interactive UI:
+  - Dropdowns (industry, difficulty, platform: mobile/web)
+  - Button: "Generate Brief"
+- Display generated brief in a clean card
+- Include "Download as PDF" button
+
+6. Footer:
+- Minimal with links and social icons
+
+Functional Requirements:
+- Use React (preferred) with modern CSS (Tailwind or similar)
+- Smooth animations (hover effects, transitions)
+- Responsive design (mobile + desktop)
+- Mock AI brief generation (use placeholder JSON if needed)
+- PDF download functionality (can simulate)
+
+Tone:
+- Professional, inspiring, and slightly creative
+- Target audience: UI/UX designers building portfolios
+
+Optional Enhancements:
+- Add login/signup UI (optional)
+- Add dark mode toggle
+- Add “Saved Briefs” section
+
+Make the UI polished, modern, and portfolio-worthy.
