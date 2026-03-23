@@ -40,17 +40,40 @@ export function Generator() {
         return resolved || value;
       };
 
+      const seen = new Map<string, string>();
+      const replaceModernColors = (text: string): string =>
+        text.replace(/ok(?:lab|lch)\([^)]+\)/g, (match) => {
+          if (!seen.has(match)) seen.set(match, resolveColor(match));
+          return seen.get(match)!;
+        });
+
       const patchOklab = (clonedDoc: Document) => {
-        const seen = new Map<string, string>();
+        // Patch inline <style> elements
         clonedDoc.querySelectorAll("style").forEach((styleEl) => {
           if (!styleEl.textContent) return;
-          styleEl.textContent = styleEl.textContent.replace(
-            /oklab\([^)]+\)/g,
-            (match) => {
-              if (!seen.has(match)) seen.set(match, resolveColor(match));
-              return seen.get(match)!;
-            }
-          );
+          styleEl.textContent = replaceModernColors(styleEl.textContent);
+        });
+
+        // Read CSS rules from the ORIGINAL document's parsed stylesheets,
+        // patch them, and inject as inline <style> into the clone so that
+        // html2canvas never encounters oklab/oklch from linked sheets.
+        Array.from(document.styleSheets).forEach((sheet) => {
+          try {
+            const rules = Array.from(sheet.cssRules ?? []);
+            const css = rules.map((r) => r.cssText).join("\n");
+            if (!css) return;
+            const patched = replaceModernColors(css);
+            const inlined = clonedDoc.createElement("style");
+            inlined.textContent = patched;
+            clonedDoc.head.appendChild(inlined);
+          } catch {
+            // Cross-origin sheets throw SecurityError — skip them
+          }
+        });
+
+        // Remove <link rel="stylesheet"> from clone to avoid double-loading
+        clonedDoc.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+          link.parentNode?.removeChild(link);
         });
       };
 
