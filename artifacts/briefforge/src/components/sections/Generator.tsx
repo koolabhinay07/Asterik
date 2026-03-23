@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Download, RefreshCw, FileText, CheckCircle2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { INDUSTRIES, DIFFICULTIES, PLATFORMS, Brief, generateMockBrief } from "@/data/mock-data";
+import { INDUSTRIES, DIFFICULTIES, PLATFORMS, Brief, DeliverablePhase, generateMockBrief } from "@/data/mock-data";
 
 export function Generator() {
   const [industry, setIndustry] = useState<string>(INDUSTRIES[0]);
@@ -195,20 +195,33 @@ export function Generator() {
                       </div>
 
                       <div>
-                        <h4 className="text-lg font-semibold text-foreground border-b border-border pb-2 mb-4">
+                        <h4 className="flex items-center gap-2 text-lg font-semibold text-foreground border-b border-border pb-2 mb-5">
+                          <CheckCircle2 size={18} className="text-primary" />
                           Deliverables
                         </h4>
-                        <div className="bg-secondary/50 rounded-xl p-5 border border-border">
-                          <ul className="space-y-3">
-                            {generatedBrief.deliverables.map((del, i) => (
-                              <li key={i} className="flex items-center gap-3 text-foreground font-medium">
-                                <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs">
-                                  {i + 1}
-                                </div>
-                                {del}
-                              </li>
-                            ))}
-                          </ul>
+                        <div className="space-y-4">
+                          {generatedBrief.deliverables.map((phase: DeliverablePhase, i: number) => (
+                            <div key={i} className="bg-secondary/40 border border-border rounded-xl p-5">
+                              <div className="flex items-center gap-2 mb-3">
+                                <span className="text-lg">{phase.icon}</span>
+                                <span className="font-semibold text-foreground text-sm">{phase.phase}</span>
+                                {phase.tag === "must" && (
+                                  <span className="ml-auto text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Must Include</span>
+                                )}
+                                {phase.tag === "include" && (
+                                  <span className="ml-auto text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">Include</span>
+                                )}
+                              </div>
+                              <ul className="space-y-1.5">
+                                {phase.items.map((item: string, j: number) => (
+                                  <li key={j} className="flex items-start gap-2 text-sm text-muted-foreground">
+                                    <span className="text-primary mt-0.5 shrink-0">›</span>
+                                    {item}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>

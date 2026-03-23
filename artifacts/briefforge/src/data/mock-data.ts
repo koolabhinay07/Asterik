@@ -6,6 +6,13 @@ export const DIFFICULTIES = ["Easy", "Medium", "Hard"] as const;
 
 export const PLATFORMS = ["Mobile", "Web", "Cross-Platform"] as const;
 
+export interface DeliverablePhase {
+  phase: string;
+  icon: string;
+  tag?: "must" | "include";
+  items: string[];
+}
+
 export interface Brief {
   id: string;
   title: string;
@@ -17,8 +24,80 @@ export interface Brief {
   userPersona: string;
   goals: string[];
   constraints: string[];
-  deliverables: string[];
+  deliverables: DeliverablePhase[];
 }
+
+const STANDARD_DELIVERABLES: DeliverablePhase[] = [
+  {
+    phase: "Research",
+    icon: "🔍",
+    items: [
+      "User interviews or assumptions (if self-initiated)",
+      "Competitor analysis",
+      "Pain points",
+      "Insights",
+      "Personas",
+      "Empathy maps",
+    ],
+  },
+  {
+    phase: "UX Design",
+    icon: "🗺️",
+    tag: "must",
+    items: [
+      "User flows (critical — map every key path a user takes)",
+      "Information architecture (basic sitemap if needed)",
+    ],
+  },
+  {
+    phase: "Ideation",
+    icon: "💡",
+    tag: "include",
+    items: [
+      "Wireframes (low fidelity)",
+      "Multiple ideas — explore at least 2–3 directions",
+      "Quick iterations based on internal critique",
+    ],
+  },
+  {
+    phase: "High-Fidelity UI",
+    icon: "🎨",
+    tag: "include",
+    items: [
+      "Final polished screens",
+      "Design system (colors, typography, components)",
+      "Consistency across all screens",
+    ],
+  },
+  {
+    phase: "Interactions & States",
+    icon: "⚡",
+    tag: "include",
+    items: [
+      "Microinteractions (hover effects, transitions, animations)",
+      "All UI states — error, loading, success, empty",
+    ],
+  },
+  {
+    phase: "Testing & Iteration",
+    icon: "🧪",
+    tag: "include",
+    items: [
+      "Usability testing (even informal, e.g. 5-second test or peer review)",
+      "What worked / what didn't",
+      "Iterations based on feedback",
+    ],
+  },
+  {
+    phase: "Case Study",
+    icon: "📖",
+    items: [
+      "Before vs. after comparison",
+      "Impact (hypothetical is fine if logical and data-backed)",
+      "Key learnings and personal reflection",
+    ],
+  },
+];
 
 export const FEATURED_BRIEFS: Brief[] = [
   {
@@ -33,18 +112,14 @@ export const FEATURED_BRIEFS: Brief[] = [
     goals: [
       "Increase onboarding completion rate by 20%",
       "Reduce time-to-completion from 8 minutes to 3 minutes",
-      "Establish trust during the document scanning phase"
+      "Establish trust during the document scanning phase",
     ],
     constraints: [
       "Must include legal disclaimers and terms of service",
       "Identity verification requires front/back ID scan + selfie",
-      "Adhere to strict AA accessibility guidelines"
+      "Adhere to strict AA accessibility guidelines",
     ],
-    deliverables: [
-      "User flow diagram",
-      "High-fidelity wireframes of the onboarding flow",
-      "Interactive prototype of the KYC steps"
-    ]
+    deliverables: STANDARD_DELIVERABLES,
   },
   {
     id: "2",
@@ -58,18 +133,14 @@ export const FEATURED_BRIEFS: Brief[] = [
     goals: [
       "Provide clear, actionable insights from daily data logs",
       "Create an intuitive input system for meals and glucose readings",
-      "Facilitate easy data sharing with primary care physicians"
+      "Facilitate easy data sharing with primary care physicians",
     ],
     constraints: [
       "HIPAA compliance implies strict privacy modes",
       "Must optimize for older screens/browsers common in clinical settings",
-      "Visual hierarchy must accommodate low-vision users"
+      "Visual hierarchy must accommodate low-vision users",
     ],
-    deliverables: [
-      "Dashboard layout strategy",
-      "Component library for data visualization (charts/graphs)",
-      "High-fidelity mockup of the main overview page"
-    ]
+    deliverables: STANDARD_DELIVERABLES,
   },
   {
     id: "3",
@@ -83,17 +154,13 @@ export const FEATURED_BRIEFS: Brief[] = [
     goals: [
       "Design a natural entry point for the AI assistant",
       "Create a chat interface that supports rich media (images, product cards)",
-      "Ensure a graceful fallback if the AI misunderstands the query"
+      "Ensure a graceful fallback if the AI misunderstands the query",
     ],
     constraints: [
       "Must integrate seamlessly into the existing app's design system",
-      "Loading states must mask AI response latency (up to 3 seconds)"
+      "Loading states must mask AI response latency (up to 3 seconds)",
     ],
-    deliverables: [
-      "Chatbot interaction flow",
-      "UI components for conversational product recommendations",
-      "Prototyped happy path of a successful search and add-to-cart"
-    ]
+    deliverables: STANDARD_DELIVERABLES,
   },
   {
     id: "4",
@@ -107,17 +174,13 @@ export const FEATURED_BRIEFS: Brief[] = [
     goals: [
       "Visualize the adaptive curriculum map",
       "Design a non-demotivating intervention state when a user struggles",
-      "Gamify progress without making it feel juvenile"
+      "Gamify progress without making it feel juvenile",
     ],
     constraints: [
       "Pathways can branch infinitely; UI must handle complex nested nodes",
-      "Mobile view must condense large syllabus maps effectively"
+      "Mobile view must condense large syllabus maps effectively",
     ],
-    deliverables: [
-      "Responsive layout mapping",
-      "High-fidelity mockups for desktop and mobile",
-      "Micro-interaction designs for unlocking new modules"
-    ]
+    deliverables: STANDARD_DELIVERABLES,
   },
   {
     id: "5",
@@ -131,17 +194,13 @@ export const FEATURED_BRIEFS: Brief[] = [
     goals: [
       "Quick entry form for adding an expense with a receipt photo",
       "Clear visualization of 'who owes who'",
-      "Support multiple currencies with real-time conversion"
+      "Support multiple currencies with real-time conversion",
     ],
     constraints: [
       "App must work primarily offline due to roaming data limits",
-      "Inputs must be large and tappable for on-the-go usage"
+      "Inputs must be large and tappable for on-the-go usage",
     ],
-    deliverables: [
-      "Information architecture",
-      "Wireframes for the core 3 screens",
-      "High-fidelity UI of the 'Settle Up' flow"
-    ]
+    deliverables: STANDARD_DELIVERABLES,
   },
   {
     id: "6",
@@ -155,22 +214,17 @@ export const FEATURED_BRIEFS: Brief[] = [
     goals: [
       "Design a 10-second interaction loop",
       "Use color and micro-animations to reflect emotional states",
-      "Encourage streaks without guilt-tripping missed days"
+      "Encourage streaks without guilt-tripping missed days",
     ],
     constraints: [
       "Minimal text; rely on iconography and sliders/gestures",
-      "Must adhere strictly to the parent app's soft, calming brand guidelines"
+      "Must adhere strictly to the parent app's soft, calming brand guidelines",
     ],
-    deliverables: [
-      "Gesture-based interaction design",
-      "High-fidelity mockups",
-      "Framer/ProtoPie animation demonstrating the 'log successful' state"
-    ]
-  }
+    deliverables: STANDARD_DELIVERABLES,
+  },
 ];
 
 export function generateMockBrief(industry: string, difficulty: string, platform: string): Brief {
-  // Find a matching brief, or return a dynamically constructed one if no exact match
   const match = FEATURED_BRIEFS.find(
     b => b.industry === industry && b.difficulty === difficulty
   );
@@ -179,7 +233,6 @@ export function generateMockBrief(industry: string, difficulty: string, platform
     return { ...match, platform };
   }
 
-  // Generate a plausible mock based on inputs
   return {
     id: `gen-${Date.now()}`,
     title: `${industry} ${platform} Experience`,
@@ -192,17 +245,13 @@ export function generateMockBrief(industry: string, difficulty: string, platform
     goals: [
       "Improve the core conversion metric by 15%",
       `Optimize the layout specifically for ${platform} usage`,
-      "Establish a modern, trustworthy visual identity"
+      "Establish a modern, trustworthy visual identity",
     ],
     constraints: [
       "Must utilize standard native UI components where possible",
       "Accessibility standard WCAG 2.1 AA must be met",
-      "Assume a slow network connection as the baseline"
+      "Assume a slow network connection as the baseline",
     ],
-    deliverables: [
-      "Core user flow diagram",
-      "3-5 high-fidelity key screens",
-      "A brief design rationale (max 250 words) explaining your choices"
-    ]
+    deliverables: STANDARD_DELIVERABLES,
   };
 }
