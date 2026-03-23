@@ -32,12 +32,41 @@ export function Generator() {
     try {
       const el = briefCardRef.current;
 
+      // Resolve an oklab() color string to its rgb() equivalent via
+      // the browser's own CSS engine (which fully supports oklab).
+      const resolveColor = (value: string): string => {
+        const probe = document.createElement("div");
+        probe.style.cssText = `position:fixed;width:0;height:0;opacity:0;pointer-events:none;color:${value}`;
+        document.body.appendChild(probe);
+        const resolved = getComputedStyle(probe).color;
+        document.body.removeChild(probe);
+        return resolved || value;
+      };
+
+      // html2canvas parses raw CSS text and doesn't understand oklab().
+      // In the onclone callback we patch every <style> element by replacing
+      // oklab(...) tokens with their browser-computed rgb() equivalents.
+      const patchOklab = (clonedDoc: Document) => {
+        const seen = new Map<string, string>();
+        clonedDoc.querySelectorAll("style").forEach((styleEl) => {
+          if (!styleEl.textContent) return;
+          styleEl.textContent = styleEl.textContent.replace(
+            /oklab\([^)]+\)/g,
+            (match) => {
+              if (!seen.has(match)) seen.set(match, resolveColor(match));
+              return seen.get(match)!;
+            }
+          );
+        });
+      };
+
       // Capture the rendered card as a high-res canvas
       const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
-        backgroundColor: null,
+        backgroundColor: "#ffffff",
         logging: false,
+        onclone: patchOklab,
       });
 
       const imgW = canvas.width;
