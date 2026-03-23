@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Download, RefreshCw, FileText, CheckCircle2, Sparkles } from "lucide-react";
-import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -26,14 +25,12 @@ export function Generator() {
     }, 1500);
   };
 
-  const handleDownloadPDF = async () => {
+  const handleDownload = async () => {
     if (!generatedBrief || !briefCardRef.current) return;
     setIsDownloading(true);
     try {
       const el = briefCardRef.current;
 
-      // Resolve an oklab() color string to its rgb() equivalent via
-      // the browser's own CSS engine (which fully supports oklab).
       const resolveColor = (value: string): string => {
         const probe = document.createElement("div");
         probe.style.cssText = `position:fixed;width:0;height:0;opacity:0;pointer-events:none;color:${value}`;
@@ -43,9 +40,6 @@ export function Generator() {
         return resolved || value;
       };
 
-      // html2canvas parses raw CSS text and doesn't understand oklab().
-      // In the onclone callback we patch every <style> element by replacing
-      // oklab(...) tokens with their browser-computed rgb() equivalents.
       const patchOklab = (clonedDoc: Document) => {
         const seen = new Map<string, string>();
         clonedDoc.querySelectorAll("style").forEach((styleEl) => {
@@ -60,60 +54,19 @@ export function Generator() {
         });
       };
 
-      // Capture the rendered card as a high-res canvas
       const canvas = await html2canvas(el, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         backgroundColor: "#ffffff",
         logging: false,
         onclone: patchOklab,
       });
 
-      const imgW = canvas.width;
-      const imgH = canvas.height;
-
-      // A4 dimensions in mm
-      const pageW = 210;
-      const pageH = 297;
-      const margin = 10;
-      const printW = pageW - margin * 2;
-      const printH = (imgH * printW) / imgW; // scale to fit width
-
-      const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-
-      let remainingH = printH;
-      let srcY = 0; // top of the source canvas slice (in px)
-      let pageNum = 0;
-
-      while (remainingH > 0) {
-        if (pageNum > 0) doc.addPage();
-
-        const sliceH = Math.min(remainingH, pageH - margin * 2); // mm height to print on this page
-        const slicePx = (sliceH / printW) * imgW;               // equivalent px height in source
-
-        // Create a temporary canvas for this slice
-        const sliceCanvas = document.createElement("canvas");
-        sliceCanvas.width = imgW;
-        sliceCanvas.height = slicePx;
-        const ctx = sliceCanvas.getContext("2d")!;
-        ctx.drawImage(canvas, 0, srcY, imgW, slicePx, 0, 0, imgW, slicePx);
-
-        doc.addImage(
-          sliceCanvas.toDataURL("image/png"),
-          "PNG",
-          margin,
-          margin,
-          printW,
-          sliceH
-        );
-
-        srcY += slicePx;
-        remainingH -= sliceH;
-        pageNum++;
-      }
-
-      const filename = `${generatedBrief.title.replace(/[^a-z0-9]/gi, "-").toLowerCase()}-brief.pdf`;
-      doc.save(filename);
+      const filename = `${generatedBrief.title.replace(/[^a-z0-9]/gi, "-").toLowerCase()}-brief.png`;
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
     } finally {
       setIsDownloading(false);
     }
@@ -320,11 +273,11 @@ export function Generator() {
                   
                   {/* Action Bar */}
                   <div className="bg-secondary/30 border-t border-border p-4 flex justify-end">
-                    <Button variant="outline" onClick={handleDownloadPDF} disabled={isDownloading}>
+                    <Button variant="outline" onClick={handleDownload} disabled={isDownloading}>
                       {isDownloading ? (
-                        <><Loader2 size={16} className="mr-2 animate-spin" />Generating PDF...</>
+                        <><Loader2 size={16} className="mr-2 animate-spin" />Downloading...</>
                       ) : (
-                        <><Download size={16} className="mr-2" />Download PDF</>
+                        <><Download size={16} className="mr-2" />Download</>
                       )}
                     </Button>
                   </div>
