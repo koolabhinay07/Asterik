@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Download, RefreshCw, FileText, CheckCircle2, Sparkles } from "lucide-react";
 import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { INDUSTRIES, DIFFICULTIES, PLATFORMS, Brief, DeliverablePhase, generateMockBrief } from "@/data/mock-data";
@@ -11,14 +12,13 @@ export function Generator() {
   const [difficulty, setDifficulty] = useState<string>(DIFFICULTIES[1]);
   const [platform, setPlatform] = useState<string>(PLATFORMS[0]);
   const [isDownloading, setIsDownloading] = useState(false);
-
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedBrief, setGeneratedBrief] = useState<Brief | null>(null);
+  const briefCardRef = useRef<HTMLDivElement>(null);
 
   const handleGenerate = () => {
     setIsGenerating(true);
     setGeneratedBrief(null);
-    
     setTimeout(() => {
       const brief = generateMockBrief(industry, difficulty, platform);
       setGeneratedBrief(brief);
@@ -27,202 +27,60 @@ export function Generator() {
   };
 
   const handleDownloadPDF = async () => {
-    if (!generatedBrief) return;
+    if (!generatedBrief || !briefCardRef.current) return;
     setIsDownloading(true);
-
     try {
-      const doc = new jsPDF({ unit: "mm", format: "a4" });
-      const pageW = doc.internal.pageSize.getWidth();
-      const pageH = doc.internal.pageSize.getHeight();
-      const margin = 18;
-      const contentW = pageW - margin * 2;
-      let y = 0;
+      const el = briefCardRef.current;
 
-      const PURPLE = [99, 72, 234] as [number, number, number];
-      const DARK   = [17, 17, 27]  as [number, number, number];
-      const GRAY   = [100, 100, 115] as [number, number, number];
-      const LIGHT  = [245, 245, 250] as [number, number, number];
-      const WHITE  = [255, 255, 255] as [number, number, number];
-
-      const addPage = () => {
-        doc.addPage();
-        y = margin;
-      };
-
-      const checkY = (needed: number) => {
-        if (y + needed > pageH - margin) addPage();
-      };
-
-      const wrapText = (text: string, maxWidth: number, fontSize: number): string[] => {
-        doc.setFontSize(fontSize);
-        return doc.splitTextToSize(text, maxWidth);
-      };
-
-      // ── HEADER BANNER ──────────────────────────────────────────────────
-      doc.setFillColor(...PURPLE);
-      doc.rect(0, 0, pageW, 42, "F");
-
-      doc.setTextColor(...WHITE);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(22);
-      doc.text("BriefForge", margin, 16);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.text("UX Design Brief", margin, 23);
-
-      // Badges top-right
-      const badges = [generatedBrief.industry, generatedBrief.platform, generatedBrief.difficulty];
-      let bx = pageW - margin;
-      badges.reverse().forEach((label) => {
-        doc.setFontSize(8);
-        const tw = doc.getTextWidth(label) + 6;
-        bx -= tw + 2;
-        doc.setFillColor(255, 255, 255, 0.2);
-        doc.roundedRect(bx, 10, tw, 7, 1.5, 1.5, "F");
-        doc.setTextColor(...WHITE);
-        doc.text(label, bx + 3, 15.5);
+      // Capture the rendered card as a high-res canvas
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+        logging: false,
       });
 
-      y = 32;
-      doc.setTextColor(...WHITE);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(15);
-      const titleLines = wrapText(generatedBrief.title, contentW, 15);
-      titleLines.forEach((line) => { doc.text(line, margin, y); y += 6; });
+      const imgW = canvas.width;
+      const imgH = canvas.height;
 
-      y = 50;
+      // A4 dimensions in mm
+      const pageW = 210;
+      const pageH = 297;
+      const margin = 10;
+      const printW = pageW - margin * 2;
+      const printH = (imgH * printW) / imgW; // scale to fit width
 
-      // ── SECTION HELPER ─────────────────────────────────────────────────
-      const sectionHeader = (title: string, icon: string) => {
-        checkY(14);
-        doc.setFillColor(...LIGHT);
-        doc.roundedRect(margin, y, contentW, 9, 2, 2, "F");
-        doc.setTextColor(...PURPLE);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.text(`${icon}  ${title}`, margin + 3, y + 6);
-        y += 13;
-      };
+      const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
 
-      const bodyText = (text: string, indent = 0) => {
-        const lines = wrapText(text, contentW - indent, 9);
-        checkY(lines.length * 4.5 + 2);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.setTextColor(...DARK);
-        lines.forEach((line) => { doc.text(line, margin + indent, y); y += 4.5; });
-        y += 1;
-      };
+      let remainingH = printH;
+      let srcY = 0; // top of the source canvas slice (in px)
+      let pageNum = 0;
 
-      const bullet = (text: string, indent = 4) => {
-        const lines = wrapText(text, contentW - indent - 5, 9);
-        checkY(lines.length * 4.5 + 1);
-        doc.setFillColor(...PURPLE);
-        doc.circle(margin + indent + 1.2, y - 1.2, 1, "F");
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.setTextColor(...DARK);
-        lines.forEach((line, i) => {
-          doc.text(line, margin + indent + 4, y);
-          y += 4.5;
-        });
-        y += 0.5;
-      };
+      while (remainingH > 0) {
+        if (pageNum > 0) doc.addPage();
 
-      // ── PROBLEM STATEMENT ─────────────────────────────────────────────
-      sectionHeader("Problem Statement", "📋");
-      bodyText(generatedBrief.problemStatement);
-      y += 2;
+        const sliceH = Math.min(remainingH, pageH - margin * 2); // mm height to print on this page
+        const slicePx = (sliceH / printW) * imgW;               // equivalent px height in source
 
-      // ── USER PERSONA ──────────────────────────────────────────────────
-      sectionHeader("User Persona", "👤");
-      checkY(20);
-      doc.setFillColor(...LIGHT);
-      doc.roundedRect(margin, y, contentW, 18, 2, 2, "F");
-      doc.setDrawColor(...PURPLE);
-      doc.setLineWidth(0.8);
-      doc.line(margin + 3, y, margin + 3, y + 18);
-      doc.setLineWidth(0.2);
-      const personaLines = wrapText(generatedBrief.userPersona, contentW - 10, 9);
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(9);
-      doc.setTextColor(...GRAY);
-      let py = y + 6;
-      personaLines.forEach((line) => { doc.text(line, margin + 8, py); py += 4.5; });
-      y += 22;
+        // Create a temporary canvas for this slice
+        const sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = imgW;
+        sliceCanvas.height = slicePx;
+        const ctx = sliceCanvas.getContext("2d")!;
+        ctx.drawImage(canvas, 0, srcY, imgW, slicePx, 0, 0, imgW, slicePx);
 
-      // ── GOALS ─────────────────────────────────────────────────────────
-      sectionHeader("Goals", "🎯");
-      generatedBrief.goals.forEach((g) => bullet(g));
-      y += 2;
+        doc.addImage(
+          sliceCanvas.toDataURL("image/png"),
+          "PNG",
+          margin,
+          margin,
+          printW,
+          sliceH
+        );
 
-      // ── CONSTRAINTS ───────────────────────────────────────────────────
-      sectionHeader("Constraints", "⚠️");
-      generatedBrief.constraints.forEach((c) => bullet(c));
-      y += 4;
-
-      // ── DELIVERABLES ──────────────────────────────────────────────────
-      sectionHeader("Deliverables", "✅");
-
-      generatedBrief.deliverables.forEach((phase: DeliverablePhase) => {
-        const phaseHeight = phase.items.length * 5 + 16;
-        checkY(phaseHeight);
-
-        // Phase card background
-        doc.setFillColor(...LIGHT);
-        doc.roundedRect(margin, y, contentW, phaseHeight, 2, 2, "F");
-
-        // Tag badge
-        if (phase.tag === "must") {
-          doc.setFillColor(...PURPLE);
-          doc.roundedRect(pageW - margin - 28, y + 2, 26, 6, 1.5, 1.5, "F");
-          doc.setTextColor(...WHITE);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(6.5);
-          doc.text("MUST INCLUDE", pageW - margin - 26, y + 6.2);
-        } else if (phase.tag === "include") {
-          doc.setFillColor(16, 185, 129);
-          doc.roundedRect(pageW - margin - 20, y + 2, 18, 6, 1.5, 1.5, "F");
-          doc.setTextColor(...WHITE);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(6.5);
-          doc.text("INCLUDE", pageW - margin - 18, y + 6.2);
-        }
-
-        // Phase title
-        doc.setTextColor(...DARK);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9.5);
-        doc.text(`${phase.icon}  ${phase.phase}`, margin + 4, y + 7);
-        y += 11;
-
-        // Items
-        phase.items.forEach((item: string) => {
-          doc.setTextColor(...GRAY);
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(8.5);
-          doc.text("›", margin + 6, y);
-          const itemLines = wrapText(item, contentW - 14, 8.5);
-          itemLines.forEach((line, i) => {
-            doc.text(line, margin + 10, y);
-            y += 4.5;
-          });
-        });
-        y += 5;
-      });
-
-      // ── FOOTER ────────────────────────────────────────────────────────
-      const totalPages = (doc.internal as any).getNumberOfPages();
-      for (let i = 1; i <= totalPages; i++) {
-        doc.setPage(i);
-        doc.setFillColor(...LIGHT);
-        doc.rect(0, pageH - 10, pageW, 10, "F");
-        doc.setTextColor(...GRAY);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(7.5);
-        doc.text("Generated by BriefForge · briefforge.app", margin, pageH - 4);
-        doc.text(`Page ${i} of ${totalPages}`, pageW - margin, pageH - 4, { align: "right" });
+        srcY += slicePx;
+        remainingH -= sliceH;
+        pageNum++;
       }
 
       const filename = `${generatedBrief.title.replace(/[^a-z0-9]/gi, "-").toLowerCase()}-brief.pdf`;
@@ -331,6 +189,7 @@ export function Generator() {
               ) : generatedBrief ? (
                 <motion.div 
                   key="result"
+                  ref={briefCardRef}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-card border border-border rounded-2xl shadow-xl overflow-hidden relative"
