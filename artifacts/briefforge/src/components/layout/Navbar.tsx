@@ -11,27 +11,33 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
-    
-    // Check initial dark mode preference
-    if (document.documentElement.classList.contains('dark')) {
-      setIsDark(true);
-    }
-    
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    // Sync state with whatever the inline script already applied
+    setIsDark(document.documentElement.classList.contains("dark"));
+
+    // React to OS-level dark mode changes when user hasn't stored a preference
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleMq = (e: MediaQueryListEvent) => {
+      if (localStorage.getItem("theme")) return; // user has an explicit choice
+      const useDark = e.matches;
+      setIsDark(useDark);
+      document.documentElement.classList.toggle("dark", useDark);
+    };
+    mq.addEventListener("change", handleMq);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      mq.removeEventListener("change", handleMq);
+    };
   }, []);
 
   const toggleDarkMode = () => {
     const newDark = !isDark;
     setIsDark(newDark);
-    if (newDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle("dark", newDark);
+    localStorage.setItem("theme", newDark ? "dark" : "light");
   };
 
   const navLinks = [
