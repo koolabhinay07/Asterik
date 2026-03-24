@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { X, Mail, Lock, User, Chrome, Eye, EyeOff, Loader2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@workspace/replit-auth-web";
 
@@ -20,19 +20,18 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const resetForm = () => {
-    setEmail("");
-    setPassword("");
-    setFirstName("");
-    setLastName("");
-    setError(null);
-    setShowPassword(false);
-  };
-
-  const switchMode = (newMode: "signin" | "signup") => {
-    setMode(newMode);
-    resetForm();
-  };
+  // Sync mode and reset form whenever the modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setMode(defaultMode);
+      setEmail("");
+      setPassword("");
+      setFirstName("");
+      setLastName("");
+      setError(null);
+      setShowPassword(false);
+    }
+  }, [isOpen, defaultMode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +50,18 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
       setIsLoading(false);
     }
   };
+
+  const heading = mode === "signin"
+    ? "Welcome back"
+    : "Great to have you here!";
+
+  const subheading = mode === "signin"
+    ? "Sign in to your BriefForge account"
+    : "Create your account and start building your portfolio";
+
+  const googleLabel = mode === "signin"
+    ? "Continue with Google"
+    : "Sign up with Google";
 
   return (
     <AnimatePresence>
@@ -89,12 +100,10 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
                 {/* Header */}
                 <div className="mb-6 text-center">
                   <h2 className="text-2xl font-bold tracking-tight text-foreground">
-                    {mode === "signin" ? "Welcome back" : "Create account"}
+                    {heading}
                   </h2>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {mode === "signin"
-                      ? "Sign in to your BriefForge account"
-                      : "Start generating professional briefs"}
+                    {subheading}
                   </p>
                 </div>
 
@@ -122,7 +131,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
                       fill="#EA4335"
                     />
                   </svg>
-                  Continue with Google
+                  {googleLabel}
                 </button>
 
                 {/* Divider */}
@@ -204,36 +213,9 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
                     className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
                   >
                     {isLoading && <Loader2 size={14} className="animate-spin" />}
-                    {mode === "signin" ? "Sign in" : "Create account"}
+                    {mode === "signin" ? "Sign in" : "Create my account"}
                   </button>
                 </form>
-
-                {/* Switch mode */}
-                <p className="mt-4 text-center text-sm text-muted-foreground">
-                  {mode === "signin" ? (
-                    <>
-                      Don't have an account?{" "}
-                      <button
-                        type="button"
-                        onClick={() => switchMode("signup")}
-                        className="font-medium text-primary hover:underline"
-                      >
-                        Sign up
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      Already have an account?{" "}
-                      <button
-                        type="button"
-                        onClick={() => switchMode("signin")}
-                        className="font-medium text-primary hover:underline"
-                      >
-                        Sign in
-                      </button>
-                    </>
-                  )}
-                </p>
               </div>
             </div>
           </motion.div>
