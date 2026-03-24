@@ -21,12 +21,14 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 ```text
 artifacts-monorepo/
 ├── artifacts/              # Deployable applications
-│   └── api-server/         # Express API server
+│   ├── api-server/         # Express API server
+│   └── briefforge/         # BriefForge React/Vite web app
 ├── lib/                    # Shared libraries
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
 │   ├── api-zod/            # Generated Zod schemas from OpenAPI
-│   └── db/                 # Drizzle ORM schema + DB connection
+│   ├── db/                 # Drizzle ORM schema + DB connection
+│   └── replit-auth-web/    # useAuth() hook for web (OIDC + email/password)
 ├── scripts/                # Utility scripts (single workspace package)
 │   └── src/                # Individual .ts scripts, run via `pnpm --filter @workspace/scripts run <script>`
 ├── pnpm-workspace.yaml     # pnpm workspace (artifacts/*, lib/*, lib/integrations/*, scripts)
@@ -90,6 +92,34 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 ### `lib/api-client-react` (`@workspace/api-client-react`)
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
+
+### `artifacts/briefforge` (`@workspace/briefforge`)
+
+React + Vite + Tailwind v4 web app — BriefForge. Generates professional design/development briefs.
+
+- Auth: `AuthModal` component with email/password form + "Continue with Google" button
+- Navbar shows Sign in / Get Started when logged out; user avatar + dropdown when logged in
+- Download: `html-to-image` (`toPng`, pixelRatio 3) for high-quality PNG export
+- Dark mode: native dark mode with localStorage persistence; `darkreader-lock` meta tag prevents double-processing
+- `pnpm --filter @workspace/briefforge run dev` — dev server (PORT=18287)
+
+### `lib/replit-auth-web` (`@workspace/replit-auth-web`)
+
+Shared React hook (`useAuth`) for web authentication. Supports:
+- `loginWithGoogle()` — redirects to Replit OIDC
+- `loginWithEmail(email, password)` — POST /api/auth/login (email/password)
+- `registerWithEmail(email, password, firstName?, lastName?)` — POST /api/auth/register
+- `logout()` — redirects to /api/logout
+- `refresh()` — re-fetches auth state
+
+### Authentication Architecture
+
+- **Google sign-in**: Replit OIDC (`openid-client`) — `/api/login` → `/api/callback` → session cookie
+- **Email/password**: bcryptjs hashing — `POST /api/auth/register` / `POST /api/auth/login`
+- **Sessions**: stored in PostgreSQL `sessions` table (Drizzle); `sid` cookie (httpOnly, secure, 7-day TTL)
+- **Middleware**: `authMiddleware` reads `sid` cookie or `Authorization: Bearer <sid>` header, populates `req.user`
+- **DB tables**: `sessionsTable`, `usersTable` (with `passwordHash` for email auth; OIDC users have null hash)
+- **Package**: `openid-client`, `bcryptjs` (pure JS, no native compilation needed), `cookie-parser`
 
 ### `scripts` (`@workspace/scripts`)
 
