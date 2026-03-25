@@ -1,41 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Sparkles, Moon, Sun, Menu, X } from "lucide-react";
+import { Sparkles, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDark, setIsDark] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
-
-    setIsDark(document.documentElement.classList.contains("dark"));
-
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleMq = (e: MediaQueryListEvent) => {
-      if (localStorage.getItem("theme")) return;
-      const useDark = e.matches;
-      setIsDark(useDark);
-      document.documentElement.classList.toggle("dark", useDark);
-    };
-    mq.addEventListener("change", handleMq);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      mq.removeEventListener("change", handleMq);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const toggleDarkMode = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    document.documentElement.classList.toggle("dark", newDark);
-    localStorage.setItem("theme", newDark ? "dark" : "light");
-  };
 
   const navLinks = [
     { name: "Features", href: "#features" },
@@ -75,24 +52,10 @@ export function Navbar() {
               </li>
             ))}
           </ul>
-
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors"
-            aria-label="Toggle dark mode"
-          >
-            {isDark ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
         </nav>
 
         {/* Mobile Toggle */}
-        <div className="flex md:hidden items-center gap-4">
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 text-muted-foreground"
-          >
-            {isDark ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
+        <div className="flex md:hidden items-center">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 text-foreground"
