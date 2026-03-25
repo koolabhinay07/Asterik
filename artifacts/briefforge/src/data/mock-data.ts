@@ -1757,6 +1757,8 @@ const BRIEF_POOL: Record<string, BriefTemplate[]> = {
   ],
 };
 
+let _lastBriefId: string | null = null;
+
 export function generateMockBrief(industry: string, difficulty: string, platform: string): Brief {
   const key = `${industry}-${difficulty}`;
   const pool = BRIEF_POOL[key];
