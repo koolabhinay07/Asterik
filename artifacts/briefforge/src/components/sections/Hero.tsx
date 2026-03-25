@@ -29,7 +29,7 @@ export function Hero({ activeFilter, setActiveFilter }: HeroProps) {
           </span>
           <h1 className="text-5xl md:text-7xl font-display font-extrabold text-foreground leading-tight mb-6">
             Create Portfolio-Ready <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">
+            <span className="text-primary">
               UX Case Studies
             </span>
           </h1>
