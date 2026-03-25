@@ -4,7 +4,6 @@ import { Hero } from "@/components/sections/Hero";
 import { Carousel } from "@/components/sections/Carousel";
 import { Features } from "@/components/sections/Features";
 import { Generator } from "@/components/sections/Generator";
-import { Pricing } from "@/components/sections/Pricing";
 import { Footer } from "@/components/layout/Footer";
 
 export default function Home() {
@@ -18,7 +17,6 @@ export default function Home() {
         <Carousel activeFilter={activeFilter} />
         <Features />
         <Generator />
-        <Pricing />
       </main>
       <Footer />
     </div>

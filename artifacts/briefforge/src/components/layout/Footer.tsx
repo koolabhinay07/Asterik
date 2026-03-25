@@ -37,7 +37,6 @@ export function Footer() {
             <ul className="flex flex-col gap-3">
               <li><a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a></li>
               <li><a href="#generator" className="text-muted-foreground hover:text-foreground transition-colors">Generator</a></li>
-              <li><a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a></li>
               <li><a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Changelog</a></li>
             </ul>
           </div>
