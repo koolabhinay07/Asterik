@@ -1,5 +1,5 @@
 export const INDUSTRIES = [
-  "Fintech", "Healthcare", "E-commerce", "AI", "EdTech", "Travel", "Social"
+  "Fintech", "Healthcare", "E-commerce", "AI", "EdTech", "Travel", "Social", "Reddit", "Substack", "Others"
 ] as const;
 
 export const DIFFICULTIES = ["Easy", "Medium", "Hard"] as const;
@@ -1259,9 +1259,503 @@ const BRIEF_POOL: Record<string, BriefTemplate[]> = {
       ],
     },
   ],
-};
+  // ─── REDDIT ───────────────────────────────────────────────────────────────
+  // Briefs sourced from real UI/UX complaints across r/mildlyinfuriating,
+  // r/userexperience, r/webdesign, and r/UX
 
-let _lastBriefId: string | null = null;
+  "Reddit-Easy": [
+    {
+      id: "red-easy-1",
+      title: "Cookie Consent Banner Redesign",
+      description: "Fix the infamous dark pattern where 'Accept All' is one click but 'Reject All' requires navigating 4 nested screens.",
+      problemStatement: "Across r/mildlyinfuriating, cookie consent banners are among the most upvoted complaints. 'Accept All' is a prominent primary button, while 'Reject All' is hidden behind 'Manage Preferences' → 'Vendors' → deselect all → 'Save'. Users either give up and accept or leave the site entirely. The GDPR intended to give users control — the UX actively undermines that intent.",
+      userPersona: "Ravi (28), a privacy-conscious developer. He opens r/privacytoolsIO daily and is acutely aware of tracking. He rage-closes 3 tabs a week because consent banners are too hostile to navigate.",
+      goals: [
+        "Make 'Reject All' equally prominent and one-click — same level as 'Accept All'",
+        "Reduce consent flow to a maximum of 2 screens for any choice",
+        "Comply with GDPR while respecting user intent — no guilt language or dark patterns",
+      ],
+      constraints: [
+        "Must still collect granular consent categories (Analytics, Marketing, Functional)",
+        "Persistent preference storage — don't re-ask on every visit",
+        "Banner must not obscure more than 20% of the viewport on mobile",
+      ],
+    },
+    {
+      id: "red-easy-2",
+      title: "App Review Prompt Redesign",
+      description: "Redesign the review request flow so it asks at the right moment — not the worst one.",
+      problemStatement: "A top complaint on r/mildlyinfuriating: apps asking for a 5-star review the first time you open them, immediately after an error, or mid-task. One viral post showed an app asking for a review while the user was on hold with customer support. Apps that prompt poorly average 0.4 stars lower than apps that time prompts well.",
+      userPersona: "Jess (26), a frequent app user who has genuinely wanted to leave positive reviews but was so annoyed by the timing that she dismissed without rating. She now reflexively dismisses all prompts.",
+      goals: [
+        "Trigger review prompts only after a clearly positive user action (task completed, goal reached, streak achieved)",
+        "Design a 2-step pre-prompt: 'Enjoying the app?' → only then open the OS review dialog",
+        "Never prompt within 7 days of a negative event (error, crash, support contact)",
+      ],
+      constraints: [
+        "iOS and Android OS review dialogs cannot be customised — design the surrounding flow only",
+        "Prompt frequency capped at once per 60 days",
+        "Users who dismiss twice should never be prompted again",
+      ],
+    },
+    {
+      id: "red-easy-3",
+      title: "Password Reset Flow",
+      description: "Redesign the universally painful 6-step password reset into something that actually makes sense.",
+      problemStatement: "r/webdesign and r/userexperience regularly surface password reset flows as a top UX failure. Common crimes: expiring reset links in under 15 minutes, not telling users the link was already used, asking for a new password before verifying the link is valid, and forcing password rules that are shown only after the user submits.",
+      userPersona: "Tom (41), a non-technical user who resets his password 2–3 times per month across various services. He has rage-closed 'forgot password' flows more times than he can count.",
+      goals: [
+        "Show password requirements upfront, before submission — not as an error after",
+        "Reset link valid for 60 minutes with clear expiry communicated in the email",
+        "Paste allowed in both password fields — no 'disable paste' nonsense",
+      ],
+      constraints: [
+        "Must verify email before showing the new password form",
+        "Password strength indicator updates in real-time as the user types",
+        "One-click 'show password' toggle in both fields",
+      ],
+    },
+  ],
+
+  "Reddit-Medium": [
+    {
+      id: "red-med-1",
+      title: "Checkout Without Forced Account Creation",
+      description: "Redesign an e-commerce checkout that removed forced registration — and saw a $300M revenue lift.",
+      problemStatement: "The 'forced account creation before checkout' is one of the most documented UX anti-patterns in history. Jared Spool's '$300 million button' case study came from exactly this problem. Yet in 2024, r/webdesign posts show hundreds of sites still force signup before purchase. Users abandon at 23% higher rates when forced to register. Guest checkout exists but is hidden below a large 'Create Account' CTA.",
+      userPersona: "Chloe (31), a careful online shopper who resists creating accounts unless she already knows she'll return to a store. She abandons 2–3 carts per month at the login/registration wall.",
+      goals: [
+        "Make 'Continue as Guest' the primary, visually dominant option at checkout entry",
+        "Offer account creation as an optional final step post-purchase ('Save your details for next time?')",
+        "Reduce checkout drop-off rate at the registration step by at least 20%",
+      ],
+      constraints: [
+        "Guest purchases must be retrievable by order ID + email (no account required for returns)",
+        "Order confirmation must arrive within 60 seconds of purchase",
+        "Must still support loyalty points accrual — optional account link post-purchase",
+      ],
+    },
+    {
+      id: "red-med-2",
+      title: "Notification Permission Request Redesign",
+      description: "Design the pre-permission flow that stops apps from burning their one-shot at push notifications.",
+      problemStatement: "r/mildlyinfuriating is full of apps that ask for push notification permission the instant the app opens — before the user has seen a single piece of value. iOS only gives you one shot; if the user taps 'Don't Allow', you can never ask again. Data shows 81% of users deny permission when asked on first launch. Apps that prime with a custom pre-prompt screen first see 3× higher opt-in rates.",
+      userPersona: "Marcus (25), a heavy smartphone user who has blanket-denied push notifications on 90% of apps. He would have allowed them on apps he uses daily if they'd asked at the right moment.",
+      goals: [
+        "Design a pre-prompt screen explaining the value of notifications before the OS dialog fires",
+        "Trigger the pre-prompt only after the user's first meaningful success moment",
+        "Offer granular control: 'Daily summary', 'Only when I'm mentioned', 'Everything'",
+      ],
+      constraints: [
+        "The native OS dialog is the true permission gate — cannot be replaced, only preceded",
+        "Pre-prompt must not feel like a bait-and-switch (be honest about notification frequency)",
+        "Users who choose 'Not now' on the pre-prompt must be re-asked after 2 weeks, not daily",
+      ],
+    },
+    {
+      id: "red-med-3",
+      title: "Job Application Portal UX Overhaul",
+      description: "Fix the ATS experience that r/cscareerquestions calls 'soul-crushing' — where applicants copy-paste their CV line by line.",
+      problemStatement: "Every week, r/cscareerquestions features posts with hundreds of upvotes about Workday, Taleo, and iCIMS portals asking candidates to upload a CV and then manually re-enter every field from it. Sessions average 45 minutes for what should take 5. One viral post: 'Just spent 90 minutes applying for a role. The portal crashed on the final submit. My data was gone.' Drop-off rates on multi-step ATS applications exceed 60%.",
+      userPersona: "Leila (27), a UX designer (ironically) applying to 15+ roles. She screenshots ATS error messages to vent on Reddit because the irony of bad UX in design job applications is unbearable.",
+      goals: [
+        "Auto-parse uploaded CV to pre-fill all form fields — user only corrects, not re-enters",
+        "Auto-save progress every 30 seconds — no data loss on crash or accidental navigation",
+        "Progress indicator showing how many sections remain and estimated time to complete",
+      ],
+      constraints: [
+        "ATS backend data model cannot be altered — this is a UI layer redesign only",
+        "CV parsing has ~85% accuracy — flag low-confidence fields for manual review",
+        "Must be fully keyboard-accessible — many candidates use screen readers",
+      ],
+    },
+  ],
+
+  "Reddit-Hard": [
+    {
+      id: "red-hard-1",
+      title: "Subscription Cancellation Dark Pattern Audit",
+      description: "Redesign a subscription product's cancellation flow, replacing every dark pattern with an ethical alternative.",
+      problemStatement: "r/mildlyinfuriating's 'roach motel' posts — easy to subscribe, impossible to cancel — go viral weekly. Common patterns: cancel buried 5 levels deep in settings, 'pause' offered as the only visible option, countdown timers creating false urgency, guilt-tripping copy ('Are you sure? You'll lose ALL your data'), and cancellation calls that put you on hold. The FTC has begun fining companies for these patterns.",
+      userPersona: "Alex (33), a subscription-fatigued millennial who has $200/month in forgotten subscriptions. He recently spent 47 minutes trying to cancel a gym app subscription and ended up disputing the charge with his bank instead.",
+      goals: [
+        "Cancellation reachable within 2 clicks from any screen (settings entry visible, not buried)",
+        "Replace every dark pattern: no guilt language, no fake urgency, no hidden 'pause' traps",
+        "Design an ethical retention moment: offer a genuine alternative (pause, downgrade, discount) — once, with a clear 'No thanks, cancel' that is equally prominent",
+      ],
+      constraints: [
+        "Retention offer can be shown once — if declined, proceed directly to cancellation confirmation",
+        "Cancellation must be instant — no 'our team will process this in 5–7 days' delays",
+        "Audit report: document each dark pattern replaced and the ethical alternative used",
+      ],
+    },
+    {
+      id: "red-hard-2",
+      title: "CAPTCHA Accessibility Redesign",
+      description: "Replace image-based CAPTCHAs with an accessible, effective alternative that doesn't punish users with disabilities.",
+      problemStatement: "r/blind and r/disability regularly share how traditional image CAPTCHAs (reCAPTCHA v2, hCaptcha) are effectively gatekeeping tools that exclude users with visual impairments, motor disabilities, and cognitive differences. Audio CAPTCHAs are frequently distorted beyond comprehension. Meanwhile, bot operators use AI to solve visual CAPTCHAs in milliseconds. The technology actively hurts real users while failing to stop bots.",
+      userPersona: "Diana (38), a screen reader user who cannot complete 1 in 3 online forms due to CAPTCHA failures. She uses a keyboard exclusively and cannot interact with grid-selection challenges.",
+      goals: [
+        "Design a CAPTCHA-free verification flow using honeypot fields, behavioural analysis, and time-on-page signals",
+        "Fallback: accessible challenge that works with screen readers and keyboard-only navigation",
+        "False positive rate under 0.1% — legitimate users must never be blocked",
+      ],
+      constraints: [
+        "No image-grid challenges — must be fully operable by keyboard and screen reader",
+        "Invisible verification (Cloudflare Turnstile model) preferred — challenge only triggered on suspicion",
+        "Must hold up against OWASP automated threat model TA-OAT-009",
+      ],
+    },
+    {
+      id: "red-hard-3",
+      title: "Form Validation & Error Recovery System",
+      description: "Redesign the error experience for a complex multi-step form — so users fix mistakes, not abandon the page.",
+      problemStatement: "A recurring r/webdesign thread: 'Why do forms clear all your data when you make a mistake?' Complex forms (tax filing, insurance, visa applications) validate on submit and then wipe all fields, or highlight 12 errors with no indication of which to fix first. One r/IRS post about the FAFSA form garnered 4k upvotes: 'It cleared my entire application because my SSN had a typo on page 6.'",
+      userPersona: "Sandra (52), completing a government grant application online. She spent 2 hours filling 6 sections. On submit, 3 fields were flagged as invalid. The page refreshed and sections 4–6 were blank.",
+      goals: [
+        "Inline validation on blur (when user leaves a field) — not on submit",
+        "Error summary at the top that links directly to each problem field",
+        "Auto-save after each section so a page refresh never loses more than 60 seconds of work",
+      ],
+      constraints: [
+        "Validation rules are set by backend — UI must consume and surface them, not redefine them",
+        "Multi-step form state must persist across browser sessions (not just tab)",
+        "Error messages must be written in plain language — no error codes, no jargon",
+      ],
+    },
+  ],
+
+  // ─── SUBSTACK ─────────────────────────────────────────────────────────────
+  // Briefs sourced from real problems discussed in design and tech newsletters
+  // on Substack: NN/g, Growth.Design, Dense Discovery, Subtract, UX Collective
+
+  "Substack-Easy": [
+    {
+      id: "sub-easy-1",
+      title: "Newsletter Subscribe Modal Redesign",
+      description: "Redesign the intrusive email capture modal that Growth.Design calls 'the UX equivalent of a mugger'.",
+      problemStatement: "Designers at Growth.Design and UX Collective have documented the subscribe-modal antipattern extensively: a full-screen overlay fires 2 seconds after page load, before the user has read a single word. The close button is an 8px 'X' in the corner. On mobile, the modal covers the entire screen with no scroll. Result: 94% dismiss rate and 60% of users who dismiss never return. The irony: these modals appear most aggressively on design and UX newsletters.",
+      userPersona: "Priya (29), a design researcher who reads 8 Substack newsletters. She unsubscribed from 3 purely because the subscribe modals were hostile. She now uses a reader app specifically to avoid website UX.",
+      goals: [
+        "Trigger subscribe prompt only after a user has read >60% of an article (scroll depth)",
+        "Offer a dismissible inline banner rather than a page-blocking overlay",
+        "A/B test: non-modal inline CTA at article bottom vs. triggered slide-in — with conversion data",
+      ],
+      constraints: [
+        "Must not intercept the reading experience during scroll",
+        "Mobile: banner occupies max 15% of viewport height",
+        "Respect 'Do Not Track' headers — no modal for users who have opted out",
+      ],
+    },
+    {
+      id: "sub-easy-2",
+      title: "Long-Form Reading Progress & Bookmarking",
+      description: "Design reading continuity tools for a long-form newsletter platform where articles average 4,000 words.",
+      problemStatement: "Writers on Substack and similar platforms have discussed in their newsletters that readers frequently start articles, get interrupted, and never find their place again. Dense Discovery's Kai Brach wrote that his most-read articles also had the lowest completion rates — not because of content quality, but because there was no way to return to where you left off. Readers restart from the top or give up.",
+      userPersona: "James (44), a professional who reads 6–8 long-form newsletters weekly. He reads during commutes and lunch breaks in 5–10 minute windows. He estimates he finishes only 30% of articles he starts.",
+      goals: [
+        "Auto-save reading position per article — resume exactly where you left off on any device",
+        "Estimated reading time displayed at article top with 'Continue from 4 min remaining'",
+        "Highlight + bookmark passages to export or revisit later",
+      ],
+      constraints: [
+        "Position sync works without requiring a user account (anonymous via device fingerprint for free tier)",
+        "Must not affect page performance — reading position saved asynchronously",
+        "Bookmarks exportable as a clean text file or sent to email",
+      ],
+    },
+    {
+      id: "sub-easy-3",
+      title: "Ethical Email Unsubscribe Flow",
+      description: "Replace the guilt-tripping unsubscribe experience with one that respects readers and actually improves retention.",
+      problemStatement: "Several Substack writers have published data showing that hostile unsubscribe flows — guilt-copy ('We'll be devastated to lose you 😢'), hidden links, re-confirm popups, and delayed processing — actually increase spam complaints more than they reduce unsubscribes. The problem is documented in newsletters like Really Good Emails and Email on Acid: unsubscribe friction correlates with higher block rates, not better retention.",
+      userPersona: "Nina (34), a newsletter reader who manages a carefully curated inbox. When she unsubscribes, she's made a deliberate decision. Guilt-tripping makes her mark the sender as spam instead — the worst outcome for the creator.",
+      goals: [
+        "One-click unsubscribe from the email footer — no login required, immediate",
+        "Optional single-question exit survey ('Too frequent / Not relevant / Just cleaning up') with no required fields",
+        "Confirmation page offers a 'pause for 30 days' alternative — presented neutrally, not as the primary CTA",
+      ],
+      constraints: [
+        "CAN-SPAM and GDPR compliant — unsubscribe must process within 10 business days (aim for instant)",
+        "No pre-ticked 'Keep me on the weekly digest' checkbox after unsubscribing from daily",
+        "Unsubscribe link must be in 14pt font minimum in the email footer",
+      ],
+    },
+  ],
+
+  "Substack-Medium": [
+    {
+      id: "sub-med-1",
+      title: "Newsletter Discovery Platform",
+      description: "Design a credible discovery experience to help readers find newsletters worth following, modelled on real curation discussions from Substack writers.",
+      problemStatement: "Substack writers regularly discuss in their newsletters the platform's discovery problem — it's almost impossible for new writers to be found, and readers have no meaningful way to browse beyond what they already follow. 'The algorithm rewards the already-famous,' writes one popular newsletter. New writers with exceptional content go unread for years. Reader-curated recommendation threads on Twitter/X have more discovery value than Substack's own browse page.",
+      userPersona: "Rachel (31), an avid newsletter reader who wants to expand beyond her current 12 subscriptions. She spends 30 minutes a week asking peers for recommendations — a signal that the platform's own discovery fails her.",
+      goals: [
+        "Reader-curated lists: 'Newsletters I'd recommend to a friend in UX design'",
+        "Quality signals beyond subscriber count: reader retention rate, article completion rate, response rate",
+        "Cross-newsletter recommendation: 'Readers of Dense Discovery also read...'",
+      ],
+      constraints: [
+        "No algorithmic black box — surface the ranking criteria transparently",
+        "Discovery must work for newsletters with fewer than 500 subscribers (early-stage creators)",
+        "Recommendation engine must not homogenise content — protect niche voices",
+      ],
+    },
+    {
+      id: "sub-med-2",
+      title: "Creator Monetisation Dashboard",
+      description: "Design the analytics and subscriber intelligence dashboard for independent newsletter writers trying to convert free to paid.",
+      problemStatement: "Newsletter writers who've written about building a paid business consistently cite the same gap: they know their open rates and subscriber count, but they have no idea which articles drive paid conversions, which free subscribers are likely to upgrade, or what the right time to pitch a subscription is. 'I'm flying blind on revenue,' writes one writer with 8,000 subscribers. Conversion rates from free to paid are 2–5% on most platforms — data-driven writers hit 8–12%.",
+      userPersona: "Dani (36), writes a weekly design newsletter with 5,200 free subscribers and 87 paid. She publishes consistently but doesn't know which content her paid subscribers value most or why others haven't converted.",
+      goals: [
+        "Identify the 'conversion moment' — which articles preceded the most free-to-paid upgrades",
+        "Subscriber engagement score: who reads everything vs. who hasn't opened in 60 days",
+        "Predicted churn list: paid subscribers at risk of cancellation based on engagement drop",
+      ],
+      constraints: [
+        "Data must be presented without overwhelming — max 5 key metrics on the primary view",
+        "No PII of individual subscribers displayed (engagement shown in aggregates, not per-person)",
+        "Export to CSV for writers who use external tools like Notion or Airtable",
+      ],
+    },
+    {
+      id: "sub-med-3",
+      title: "Comment & Discussion Redesign for Long-Form Content",
+      description: "Redesign the comment experience on a long-form newsletter platform to enable genuine intellectual discussion, not just reactions.",
+      problemStatement: "Substack writers discuss the comment section problem openly: the default threaded comment layout encourages shallow hot takes rather than substantive engagement. Writers like Robin Sloan and Craig Mod have written about turning off comments entirely because the signal-to-noise ratio was too low. Meanwhile, the most interesting discussions happen in email replies — invisible to everyone else. A better comment system could make newsletters more like communities.",
+      userPersona: "Marco (39), a thoughtful reader who writes long email replies to newsletter authors but never posts in comment sections because they feel 'too Twitter'. He values discourse, not performance.",
+      goals: [
+        "Paragraph-level comments: highlight any passage and leave a note in context",
+        "Threaded discussion with character-minimum for top-level comments (300 chars) to encourage substance",
+        "Writer can pin 3 comments as 'Notable replies' — surface the best thinking",
+      ],
+      constraints: [
+        "Comments from free subscribers visible to all; paid subscriber comments marked with a visual distinction",
+        "Comment notifications batched daily — not real-time (protects writer focus)",
+        "Moderation tools for writers: keyword filters, one-click hide, ban without notification",
+      ],
+    },
+  ],
+
+  "Substack-Hard": [
+    {
+      id: "sub-hard-1",
+      title: "Cross-Platform Reading Continuity",
+      description: "Design a seamless reading experience that works across email, web, and mobile app — without forcing users to choose one.",
+      problemStatement: "Multiple Substack writers have documented reader feedback: 'I read your newsletter in email, clicked a link to the web version, and now I'm lost and can't find my way back to the email.' The email-to-web handoff is broken. Articles opened from email don't remember authentication state, don't sync reading position, and don't connect to the reader's saved history on the app. The result is three fractured reading experiences that feel like three different products.",
+      userPersona: "Sophie (33), reads newsletters in three contexts: morning email on phone, web during lunch on desktop, mobile app in evenings. She currently has no way to pick up where she left off across these contexts.",
+      goals: [
+        "Email link → web: auto-authenticate reader and resume reading position if >50% was read elsewhere",
+        "Unified reading history across email, web, and app — one continuous timeline",
+        "Offline-capable mobile app: articles pre-fetched when on WiFi for later reading",
+      ],
+      constraints: [
+        "Email clients don't support JavaScript — cross-context sync requires server-side state",
+        "Anonymous readers (no account) get reading position sync on a single device only",
+        "Apple Mail Privacy Protection invalidates open-tracking pixels — design around this limitation",
+      ],
+    },
+    {
+      id: "sub-hard-2",
+      title: "Independent Writer Business Suite",
+      description: "Design an all-in-one business management interface for full-time independent newsletter writers managing $100k+ annual revenue.",
+      problemStatement: "Newsletter writers who've grown to full-time income write about having to stitch together Substack, Stripe, ConvertKit, Notion, Google Analytics, and a spreadsheet to run their business. 'I spend 8 hours a week on business admin that should take 1,' writes a writer with 15k subscribers and $180k ARR. There is no single tool designed for the full-time independent writer — only fragmented point solutions.",
+      userPersona: "Elena (41), a full-time independent journalist with 20k subscribers and $200k ARR from subscriptions, sponsorships, and courses. She has a VA who spends 15 hours/month on admin that should be automated.",
+      goals: [
+        "Revenue dashboard: subscriptions + sponsorships + courses in one P&L view",
+        "Sponsor CRM: track pitches, contracts, deliverables, and payment status per sponsor",
+        "Tax-ready export: monthly revenue reports formatted for accountant hand-off",
+      ],
+      constraints: [
+        "Must pull data from Stripe (subscriptions), PayPal (one-off), and bank CSV (manual income)",
+        "Sponsor contract templates must be customisable but legally reviewed",
+        "Data retention: 7 years of financial records for tax compliance",
+      ],
+    },
+    {
+      id: "sub-hard-3",
+      title: "Newsletter Collaborative Editing & Editorial Workflow",
+      description: "Design the editorial and publishing workflow for newsletter teams of 2–10 people, a gap several established Substack writers have publicly flagged.",
+      problemStatement: "As newsletters scale to teams, writers on Substack have posted about collaborative editing being their top pain point. 'We're writing our newsletter in a shared Google Doc, pasting into Substack manually, losing formatting, and there's no version history on the final post,' wrote one team newsletter with 80k subscribers. There is no native multi-author workflow, no editorial calendar, and no draft review process — everything happens outside the platform.",
+      userPersona: "The editorial team at a 3-person newsletter: a lead writer, an editor, and a researcher. They publish 3x per week. Currently their workflow is: Google Docs → Slack → copy-paste into Substack → lose formatting → fix manually → publish. Every issue takes 2 extra hours for formatting recovery alone.",
+      goals: [
+        "Native multi-author drafts with inline comments and suggestion mode",
+        "Editorial calendar: planned issues, deadlines, assigned authors, and review status in one view",
+        "One-click import from Google Docs preserving headings, links, images, and code blocks",
+      ],
+      constraints: [
+        "Version history: at minimum 30-day rollback on any draft",
+        "Permission roles: Editor (publish), Writer (draft only), Reviewer (comment only)",
+        "Editorial calendar must sync to Google Calendar and export as iCal",
+      ],
+    },
+  ],
+
+  // ─── OTHERS ───────────────────────────────────────────────────────────────
+  // Universal UX challenges that surface across communities and industries
+
+  "Others-Easy": [
+    {
+      id: "oth-easy-1",
+      title: "Empty State Design System",
+      description: "Design a comprehensive set of empty states for a productivity app — turning dead ends into helpful starting points.",
+      problemStatement: "Empty states are the most neglected screen in most product design sprints. When a user has no tasks, no files, no messages, or no results, the default response is a blank white screen. This is a missed opportunity: the empty state is often a new user's first interaction with a feature, and the blank screen communicates 'nothing here' instead of 'here's what to do next'.",
+      userPersona: "Maya (25), a new user of a project management tool. She created an account, reached the dashboard, saw a blank screen, and wasn't sure if something was broken or if she needed to do something.",
+      goals: [
+        "Design empty states for 6 core scenarios: no tasks, no results, no notifications, no files, no connections, and error/failed load",
+        "Each empty state includes: illustration, headline, explanation, and a primary CTA",
+        "Tone: friendly and instructive, not clinical or apologetic",
+      ],
+      constraints: [
+        "Illustrations must be SVG (scalable, theme-aware for dark mode)",
+        "Copy must be written by a UX writer — no Lorem Ipsum in deliverables",
+        "Each empty state should load in under 200ms — no heavy assets",
+      ],
+    },
+    {
+      id: "oth-easy-2",
+      title: "Settings Page Redesign",
+      description: "Tame the settings dumping ground — redesign an app's settings into an organised, discoverable experience.",
+      problemStatement: "Settings pages accumulate over years of product development, becoming a disorganised list of 60+ options with no hierarchy or grouping. Users can't find what they need, so they either give up or contact support. A competitor audit of B2B SaaS tools shows that 'can't find settings' accounts for 18% of support tickets that never should have been tickets.",
+      userPersona: "Daniel (38), a power user of a project management tool who knows the feature he wants to configure exists but has spent 11 minutes searching through 4 settings sub-menus to find it.",
+      goals: [
+        "Group all settings into a maximum of 6 logical categories with clear labels",
+        "In-settings search that highlights and scrolls to matching options",
+        "Most-accessed settings surfaced in a 'Quick Access' section at the top",
+      ],
+      constraints: [
+        "All existing settings must be retained — nothing can be removed",
+        "Keyboard-navigable throughout (Tab to focus groups, Arrow keys within)",
+        "Settings changes auto-save — no 'Save Changes' button that can be forgotten",
+      ],
+    },
+    {
+      id: "oth-easy-3",
+      title: "Address Autocomplete Form",
+      description: "Design a reliable, frustration-free address entry experience that works internationally.",
+      problemStatement: "Address forms are among the most failed interactions in e-commerce and SaaS. Common failures: postcode lookup that doesn't work for rural areas, autocomplete that overwrites a correct address with a wrong one, UK addresses that require 'county' (optional but marked required), and no support for apartment/flat numbers. Returns and delivery failures cost e-commerce businesses an average of $14 per order.",
+      userPersona: "Anya (30), a frequent online shopper in the UK who lives in a new housing development. Her postcode returns her building but not her apartment number, requiring her to fix the autocomplete output every single time.",
+      goals: [
+        "Postcode-first lookup with manual fallback when autocomplete fails",
+        "Apartment/unit number as a clearly visible separate field — not an afterthought",
+        "International: adapt required fields dynamically based on selected country (no 'State' for UK)",
+      ],
+      constraints: [
+        "Works offline: previously entered addresses retrievable without network",
+        "Accessibility: screen reader announces which field is active and what the current autocomplete suggestions are",
+        "No data sharing with third-party address enrichment services without user consent",
+      ],
+    },
+  ],
+
+  "Others-Medium": [
+    {
+      id: "oth-med-1",
+      title: "Zero-Results Search Redesign",
+      description: "Design the recovery experience when a search returns no results — turning a dead end into a useful redirect.",
+      problemStatement: "A zero-results search page is a conversion killer. Most sites show 'No results found' with no guidance. Studies show that 68% of users who see a zero-results page leave the site entirely. Yet this screen is almost never designed — it's an afterthought from engineering. The best search experiences use zero results as data: what did the user search for, what did they mean, and how can we get them there anyway?",
+      userPersona: "Leo (28), searching an e-commerce site for 'running shoes waterproof'. The search returns zero results. He can see the site sells running shoes. He's not sure if 'waterproof running shoes' just aren't sold, or if the search doesn't understand natural language.",
+      goals: [
+        "Spell-check and suggest the most likely corrected query with one-click apply",
+        "Fallback to related category browsing: 'We don't have that exact match — here's Running Shoes'",
+        "Log zero-result searches to a product team dashboard (what are users looking for that we don't have?)",
+      ],
+      constraints: [
+        "Zero-results page must load in under 1 second — no complex ML inference client-side",
+        "Suggested alternatives must be genuinely relevant — no irrelevant 'you might like' padding",
+        "Search query preserved in the input bar after submission",
+      ],
+    },
+    {
+      id: "oth-med-2",
+      title: "Complex Tool Onboarding Flow",
+      description: "Design the first-run experience for a powerful but complex tool so new users reach their first 'aha moment' before they churn.",
+      problemStatement: "Feature-rich products (design tools, developer platforms, analytics suites) suffer from a common problem: they're built by experts, for experts, which makes them impenetrable for new users. The average SaaS product loses 40–60% of new signups in the first session. Yet onboarding is rarely designed with the same rigour as core features — it's added at the end of the sprint, if at all.",
+      userPersona: "Fatima (29), a junior data analyst who just got access to a complex BI tool her company uses. She has 30 minutes before her first presentation using it. The welcome screen has 8 options and no clear start.",
+      goals: [
+        "Identify the single 'aha moment' for the tool and design the onboarding to reach it within 3 minutes",
+        "Progressive disclosure: show only what's needed for the first task — hide advanced features until relevant",
+        "Interactive walkthrough that teaches by doing, not by showing tooltips the user has to dismiss",
+      ],
+      constraints: [
+        "Onboarding must be skippable (advanced users) but restartable (from Help menu)",
+        "Zero assumptions about prior knowledge — assume the user has never seen the tool",
+        "Onboarding data (sample datasets, demo workspace) must be deletable in one action",
+      ],
+    },
+    {
+      id: "oth-med-3",
+      title: "Offline-First Mobile App Design",
+      description: "Design a field-work app that functions seamlessly with no internet — and syncs gracefully when connectivity returns.",
+      problemStatement: "Field workers (construction inspectors, delivery drivers, community health workers) use apps in areas with no reliable connectivity. Most apps show a loading spinner indefinitely or a generic 'No internet connection' error and become completely non-functional. The apps were designed assuming a constant connection — a luxury that doesn't exist in the field.",
+      userPersona: "James (45), a building inspector who visits 8 sites per day. Half his site visits are in structures with no mobile signal. He currently carries a paper checklist because the digital app stops working underground.",
+      goals: [
+        "All core workflows functional offline: create, edit, and complete inspections without connectivity",
+        "Background sync: automatically upload when connectivity resumes, with conflict resolution for edited records",
+        "Connectivity status clearly communicated — 'Working offline, 3 reports queued to sync'",
+      ],
+      constraints: [
+        "Local storage budget: max 200MB cached data (inspection forms, reference images, previous records)",
+        "Conflict resolution: if a record was edited offline and also online by a colleague, show a clear diff and let the user decide",
+        "Battery-efficient background sync — no constant polling when offline",
+      ],
+    },
+  ],
+
+  "Others-Hard": [
+    {
+      id: "oth-hard-1",
+      title: "Multi-Step Form with Progress Persistence",
+      description: "Design a 10-step government or enterprise form that preserves every input across sessions, devices, and browser crashes.",
+      problemStatement: "Complex multi-step forms — visa applications, grant submissions, tax filings, insurance claims — are among the highest-stakes UX challenges in existence. The average form abandonment rate for forms with more than 10 fields is 70%. The primary causes: session timeout data loss, browser crash data loss, and no ability to resume on a different device. For government forms, this often means missing a legal deadline.",
+      userPersona: "Sandra (54), completing a government business grant application. The form has 10 sections, requires 14 documents, and must be submitted before a fiscal-year deadline. She can only work on it in 20-minute windows between work calls.",
+      goals: [
+        "Auto-save every 60 seconds with explicit 'Saved at 2:47pm' timestamp visible",
+        "Shareable resume link: email yourself a link that reopens the form at exactly the section you left",
+        "Section-level completion: each of the 10 sections can be completed independently in any order",
+      ],
+      constraints: [
+        "Data at rest encrypted — the form contains sensitive business financial information",
+        "Session must survive 24-hour inactivity without data loss",
+        "Resume link authentication: magic link via email, no password required",
+      ],
+    },
+    {
+      id: "oth-hard-2",
+      title: "Legacy App WCAG 2.1 AA Accessibility Retrofit",
+      description: "Systematically bring a 5-year-old enterprise application into WCAG 2.1 AA compliance without a full rebuild.",
+      problemStatement: "Accessibility is consistently the last sprint item and the first cut. Enterprise tools used by thousands of employees daily regularly fail basic accessibility audits — small font sizes, click targets under 24px, missing ARIA labels, no keyboard navigation, 1.8:1 contrast ratios. When a company with 200 employees discovers that 12 of them cannot effectively use the primary internal tool, it's a liability, a legal exposure, and a human failure.",
+      userPersona: "Brendan (31), a screen reader user who recently joined a company that uses an enterprise analytics tool. He cannot navigate the primary dashboard with his keyboard and VoiceOver announces every widget as 'unlabeled element'.",
+      goals: [
+        "Audit: identify every WCAG 2.1 AA failure and create a prioritised fix backlog",
+        "Sprint 1 fixes: all interactive elements keyboard-accessible, all images have alt text, all form fields labelled",
+        "Design new component library tokens: minimum 4.5:1 contrast for normal text, 3:1 for large text, 44×44px minimum tap targets",
+      ],
+      constraints: [
+        "Existing visual design must be preserved where contrast allows — this is a retrofit, not a rebrand",
+        "Fixes must be applied incrementally — no big-bang release, each PR improves accessibility independently",
+        "Validation: test with NVDA + Chrome, VoiceOver + Safari, and keyboard-only after each sprint",
+      ],
+    },
+    {
+      id: "oth-hard-3",
+      title: "Design System for a Multi-Brand Enterprise",
+      description: "Build a single design system that serves 4 distinct product brands sharing an engineering foundation, without making everything look the same.",
+      problemStatement: "Companies that acquire multiple products or serve multiple markets face a design system dilemma: build one system and risk brand homogenisation, or build four systems and multiply maintenance costs by four. The engineering team shares a component library, but each brand's design team has diverged into their own Figma files with 200+ component variants that don't map to code. Every product release involves manual reconciliation.",
+      userPersona: "The design systems team at a 400-person company: 2 designers, 1 developer. They serve 4 product teams, each with 2–3 product designers who have different needs, brand guidelines, and technical constraints.",
+      goals: [
+        "Base layer: 40 core components with no brand-specific styling — pure function and structure",
+        "Theme layer: each brand overrides only tokens (colours, radius, typography) — zero structural changes",
+        "Contribution model: how product teams propose additions to the base layer, and the governance process",
+      ],
+      constraints: [
+        "All 4 brands must pass WCAG 2.1 AA — token system must enforce minimum contrast at theme level",
+        "Component API must be stable for 12 months — product teams cannot absorb breaking changes",
+        "Figma and code must stay in sync — any token change in Figma auto-generates a PR in the design system repo",
+      ],
+    },
+  ],
+};
 
 export function generateMockBrief(industry: string, difficulty: string, platform: string): Brief {
   const key = `${industry}-${difficulty}`;
