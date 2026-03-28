@@ -215,6 +215,7 @@ export function Generator() {
                         <h4 className="flex items-center gap-2 text-lg font-semibold text-foreground border-b border-border pb-2 mb-5">
                           <CheckCircle2 size={18} className="text-primary" />
                           Deliverables
+                          <span className="ml-1 text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Must Include</span>
                         </h4>
                         <div className="space-y-4">
                           {generatedBrief.deliverables.map((phase: DeliverablePhase, i: number) => (
@@ -222,12 +223,6 @@ export function Generator() {
                               <div className="flex items-center gap-2 mb-3">
                                 <span className="text-lg">{phase.icon}</span>
                                 <span className="font-semibold text-foreground text-sm">{phase.phase}</span>
-                                {phase.tag === "must" && (
-                                  <span className="ml-auto text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Must Include</span>
-                                )}
-                                {phase.tag === "include" && (
-                                  <span className="ml-auto text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20">Include</span>
-                                )}
                               </div>
                               <ul className="space-y-1.5">
                                 {phase.items.map((item: string, j: number) => (
