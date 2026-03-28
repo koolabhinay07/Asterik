@@ -1,9 +1,0 @@
-packages:
-  "framer-motion": "For premium page transitions, scroll reveals, and interactive animations"
-  "clsx": "Utility for constructing className strings conditionally"
-  "tailwind-merge": "Utility to safely merge Tailwind CSS classes without style conflicts"
-
-notes:
-  - App is purely frontend with mocked data.
-  - PDF generation uses window.print() combined with a @media print stylesheet.
-  - Dark mode handled via a simple document.documentElement class toggle.
