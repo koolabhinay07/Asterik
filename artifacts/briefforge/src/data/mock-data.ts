@@ -1806,10 +1806,34 @@ export function generateMockBrief(industry: string, difficulty: string, platform
 // ─── FEATURED BRIEFS (Carousel) ────────────────────────────────────────────
 
 export const FEATURED_BRIEFS: Brief[] = [
+  // ── Fintech (3) ──────────────────────────────────────────────────────────
+  {
+    ...(BRIEF_POOL["Fintech-Easy"][0]),
+    industry: "Fintech",
+    difficulty: "Easy",
+    platform: "Mobile",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["Fintech-Medium"][0]),
+    industry: "Fintech",
+    difficulty: "Medium",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
   {
     ...(BRIEF_POOL["Fintech-Hard"][0]),
     industry: "Fintech",
     difficulty: "Hard",
+    platform: "Mobile",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+
+  // ── Healthcare (3) ───────────────────────────────────────────────────────
+  {
+    ...(BRIEF_POOL["Healthcare-Easy"][0]),
+    industry: "Healthcare",
+    difficulty: "Easy",
     platform: "Mobile",
     deliverables: STANDARD_DELIVERABLES,
   },
@@ -1821,10 +1845,72 @@ export const FEATURED_BRIEFS: Brief[] = [
     deliverables: STANDARD_DELIVERABLES,
   },
   {
+    ...(BRIEF_POOL["Healthcare-Hard"][0]),
+    industry: "Healthcare",
+    difficulty: "Hard",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+
+  // ── E-commerce (3) ───────────────────────────────────────────────────────
+  {
+    ...(BRIEF_POOL["E-commerce-Easy"][0]),
+    industry: "E-commerce",
+    difficulty: "Easy",
+    platform: "Mobile",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
     ...(BRIEF_POOL["E-commerce-Medium"][0]),
     industry: "E-commerce",
     difficulty: "Medium",
     platform: "Mobile",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["E-commerce-Hard"][0]),
+    industry: "E-commerce",
+    difficulty: "Hard",
+    platform: "Cross-Platform",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+
+  // ── AI (3) ───────────────────────────────────────────────────────────────
+  {
+    ...(BRIEF_POOL["AI-Easy"][0]),
+    industry: "AI",
+    difficulty: "Easy",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["AI-Medium"][0]),
+    industry: "AI",
+    difficulty: "Medium",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["AI-Hard"][0]),
+    industry: "AI",
+    difficulty: "Hard",
+    platform: "Cross-Platform",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+
+  // ── EdTech (3) ───────────────────────────────────────────────────────────
+  {
+    ...(BRIEF_POOL["EdTech-Easy"][0]),
+    industry: "EdTech",
+    difficulty: "Easy",
+    platform: "Mobile",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["EdTech-Medium"][0]),
+    industry: "EdTech",
+    difficulty: "Medium",
+    platform: "Web",
     deliverables: STANDARD_DELIVERABLES,
   },
   {
@@ -1834,6 +1920,8 @@ export const FEATURED_BRIEFS: Brief[] = [
     platform: "Cross-Platform",
     deliverables: STANDARD_DELIVERABLES,
   },
+
+  // ── Travel (3) ───────────────────────────────────────────────────────────
   {
     ...(BRIEF_POOL["Travel-Easy"][0]),
     industry: "Travel",
@@ -1842,17 +1930,109 @@ export const FEATURED_BRIEFS: Brief[] = [
     deliverables: STANDARD_DELIVERABLES,
   },
   {
-    ...(BRIEF_POOL["Healthcare-Easy"][1]),
-    industry: "Healthcare",
+    ...(BRIEF_POOL["Travel-Medium"][0]),
+    industry: "Travel",
+    difficulty: "Medium",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["Travel-Hard"][0]),
+    industry: "Travel",
+    difficulty: "Hard",
+    platform: "Cross-Platform",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+
+  // ── Social (3) ───────────────────────────────────────────────────────────
+  {
+    ...(BRIEF_POOL["Social-Easy"][0]),
+    industry: "Social",
     difficulty: "Easy",
     platform: "Mobile",
     deliverables: STANDARD_DELIVERABLES,
   },
   {
-    ...(BRIEF_POOL["AI-Medium"][0]),
-    industry: "AI",
+    ...(BRIEF_POOL["Social-Medium"][0]),
+    industry: "Social",
     difficulty: "Medium",
     platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["Social-Hard"][0]),
+    industry: "Social",
+    difficulty: "Hard",
+    platform: "Cross-Platform",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+
+  // ── Reddit (3) ───────────────────────────────────────────────────────────
+  {
+    ...(BRIEF_POOL["Reddit-Easy"][0]),
+    industry: "Reddit",
+    difficulty: "Easy",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["Reddit-Medium"][0]),
+    industry: "Reddit",
+    difficulty: "Medium",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["Reddit-Hard"][0]),
+    industry: "Reddit",
+    difficulty: "Hard",
+    platform: "Cross-Platform",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+
+  // ── Substack (3) ─────────────────────────────────────────────────────────
+  {
+    ...(BRIEF_POOL["Substack-Easy"][0]),
+    industry: "Substack",
+    difficulty: "Easy",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["Substack-Medium"][0]),
+    industry: "Substack",
+    difficulty: "Medium",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["Substack-Hard"][0]),
+    industry: "Substack",
+    difficulty: "Hard",
+    platform: "Cross-Platform",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+
+  // ── Others (3) ───────────────────────────────────────────────────────────
+  {
+    ...(BRIEF_POOL["Others-Easy"][0]),
+    industry: "Others",
+    difficulty: "Easy",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["Others-Medium"][0]),
+    industry: "Others",
+    difficulty: "Medium",
+    platform: "Web",
+    deliverables: STANDARD_DELIVERABLES,
+  },
+  {
+    ...(BRIEF_POOL["Others-Hard"][0]),
+    industry: "Others",
+    difficulty: "Hard",
+    platform: "Cross-Platform",
     deliverables: STANDARD_DELIVERABLES,
   },
 ];
