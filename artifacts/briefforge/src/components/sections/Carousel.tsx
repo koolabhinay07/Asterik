@@ -1,8 +1,9 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Briefcase, BarChart } from "lucide-react";
 import { FEATURED_BRIEFS, Brief } from "@/data/mock-data";
 import { Badge } from "@/components/ui/Badge";
+import { BriefModal } from "@/components/sections/BriefModal";
 
 interface CarouselProps {
   activeFilter: string | null;
@@ -10,6 +11,7 @@ interface CarouselProps {
 
 export function Carousel({ activeFilter }: CarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [selectedBrief, setSelectedBrief] = useState<Brief | null>(null);
 
   const filteredBriefs = activeFilter 
     ? FEATURED_BRIEFS.filter(b => b.industry === activeFilter)
@@ -78,7 +80,10 @@ export function Carousel({ activeFilter }: CarouselProps) {
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
                 className="min-w-[300px] md:min-w-[380px] w-[300px] md:w-[380px] snap-center shrink-0 flex flex-col"
               >
-                <div className="bg-card border border-border rounded-2xl p-6 h-full shadow-sm hover:shadow-xl hover:border-primary/30 transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden">
+                <div
+                  onClick={() => setSelectedBrief(brief)}
+                  className="bg-card border border-border rounded-2xl p-6 h-full shadow-sm hover:shadow-xl hover:border-primary/30 transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden cursor-pointer"
+                >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent rounded-bl-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity" />
                   
                   <div className="flex justify-between items-start mb-4">
@@ -99,7 +104,10 @@ export function Carousel({ activeFilter }: CarouselProps) {
                       <BarChart size={14} />
                       {brief.platform}
                     </span>
-                    <button className="text-primary font-medium hover:underline opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setSelectedBrief(brief); }}
+                      className="text-primary font-medium hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
                       View Details &rarr;
                     </button>
                   </div>
@@ -113,6 +121,8 @@ export function Carousel({ activeFilter }: CarouselProps) {
         <div className="absolute top-0 left-0 bottom-12 w-8 md:w-24 bg-gradient-to-r from-background to-transparent pointer-events-none" />
         <div className="absolute top-0 right-0 bottom-12 w-8 md:w-24 bg-gradient-to-l from-background to-transparent pointer-events-none" />
       </div>
+
+      <BriefModal brief={selectedBrief} onClose={() => setSelectedBrief(null)} />
     </section>
   );
 }
