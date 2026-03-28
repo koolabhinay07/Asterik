@@ -56,7 +56,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
     : "Great to have you here!";
 
   const subheading = mode === "signin"
-    ? "Sign in to your BriefForge account"
+    ? "Sign in to your Asterik account"
     : "Create your account and start building your portfolio";
 
   const googleLabel = mode === "signin"

@@ -36,7 +36,7 @@ export function Navbar() {
             <Sparkles size={20} />
           </div>
           <span className="font-display font-bold text-xl tracking-tight text-foreground">
-            BriefForge
+            Asterik
           </span>
         </Link>
 

@@ -12,7 +12,7 @@ export function Footer() {
               <Sparkles size={20} />
             </div>
             <span className="font-display font-bold text-xl text-foreground">
-              BriefForge
+              Asterik
             </span>
           </Link>
           <p className="text-muted-foreground max-w-sm">
@@ -22,7 +22,7 @@ export function Footer() {
 
         <div className="border-t border-border mt-10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} BriefForge. All rights reserved.
+            © {new Date().getFullYear()} Asterik. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
