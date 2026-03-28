@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Sparkles, Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDarkMode } from "@/hooks/use-dark-mode";
+import asterikLogo from "@assets/Asterik_1774711991505.png";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -32,9 +33,11 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="bg-primary text-primary-foreground p-1.5 rounded-lg group-hover:rotate-12 transition-transform">
-            <Sparkles size={20} />
-          </div>
+          <img
+            src={asterikLogo}
+            alt="Asterik logo"
+            className="w-8 h-8 group-hover:rotate-12 transition-transform"
+          />
           <span className="font-display font-bold text-xl tracking-tight text-foreground">
             Asterik
           </span>
