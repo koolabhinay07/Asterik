@@ -111,7 +111,7 @@ export function BriefModal({ brief, onClose }: BriefModalProps) {
                   <h4 className="flex items-center gap-2 text-base font-semibold text-foreground border-b border-border pb-2 mb-4">
                     <CheckCircle2 size={16} className="text-primary" />
                     Deliverables
-                    <span className="ml-1 text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Mandatory</span>
+                    <span className="ml-1 text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-2 py-0.5 rounded-full">Must Include</span>
                   </h4>
                   <div className="space-y-3">
                     {brief.deliverables.map((phase: DeliverablePhase, i: number) => (
