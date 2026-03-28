@@ -16,8 +16,8 @@ export function Features() {
     },
     {
       icon: <Download className="w-6 h-6 text-emerald-500" />,
-      title: "Downloadable PDFs",
-      description: "Export any brief as a polished, professional PDF document to reference offline or share with mentors."
+      title: "Downloadable Images",
+      description: "Export any brief as a clean, high-quality image — easy to save, share on socials, or drop straight into your portfolio."
     },
     {
       icon: <LayoutTemplate className="w-6 h-6 text-indigo-500" />,
